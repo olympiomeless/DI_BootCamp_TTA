@@ -10,12 +10,11 @@ class farm():
             self.animals[animal_type] = count
 
     def get_info(self):
-        
         print(f"\n{self.name}\n")
         for animal, count in self.animals.items():
             print(f"{animal}: {count}")
         print(f"\nE-I-E-I-0!")
-        print(f"\n  Total animaux   : {sum(self.animals.values())}")
+        return f"\n  Total animaux   : {sum(self.animals.values())}"
     
     def get_animal_types(self):
         return list(self.animals.keys())
