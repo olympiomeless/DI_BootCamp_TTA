@@ -4,66 +4,72 @@ import math
 class Pagination:
     def __init__(self, items=None, page_size=10):
         if items is None:
-            items = []
+            self.items = []
         else:
             self.items = items
         self.page_size = page_size
-        self.current_page = 0
+        self.current_idx = 0
         self.total_pages = math.ceil(len(self.items) / self.page_size) if self.items else 0
 
-    def get_total_pages(self):
-        return self.total_pages
-
-    def get_current_page_items(self):
-        start_index = (self.current_page - 1) * self.page_size
-        end_index = start_index + self.page_size
-        return self.items[start_index:end_index]
-
     def next_page(self):
-        if self.current_page < self.get_total_pages():
-            self.current_page += 1
-        return self.get_current_page_items()
+        if self.current_idx < self.total_pages - 1:
+            self.current_idx += 1
+        return self
 
     def previous_page(self):
-        if self.current_page > 1:
-            self.current_page -= 1
-        return self.get_current_page_items()
+        if self.current_idx > 0:
+            self.current_idx -= 1
+        return self
 
     def get_visible_items(self):
-        return self.get_current_page_items()
+        start_index = self.current_idx * self.page_size
+        end_index = start_index + self.page_size
+        return self.items[start_index:end_index]
     
     def go_to_page(self, page_number):
-        if 1 <= page_number <= self.get_total_pages():
-            self.current_page = page_number
+        if page_number < 1 or page_number > self.total_pages:
+            raise ValueError(f"Page number must be between 1 and {self.total_pages}")
+        self.current_idx = page_number - 1
+        return self
     
     def __str__(self):
-        return f"Page {self.current_page} of {self.get_total_pages()}: {self.get_current_page_items()}"
+        items        = self.get_visible_items()
+        current_page = self.current_idx + 1   # ✅ conversion 0-based → 1-based pour affichage
+        header       = f"Page {current_page}/{self.total_pages} :"
+        items_str    = "\n".join(str(item) for item in items)
+        return f"{header}\n{items_str}"
     
     def first_page(self):
-        self.current_page = 1
-        return self.get_current_page_items()
+        self.current_idx = 0
+        return self.get_visible_items()
     
     def last_page(self):
-        self.current_page = self.get_total_pages()
-        return self.get_current_page_items()
+        self.current_idx = self.total_pages - 1
+        return self.get_visible_items()
     
 
 alphabetList = list("abcdefghijklmnopqrstuvwxyz")
 p = Pagination(alphabetList, 4)
 
-print(p.get_visible_items())
-# ['a', 'b', 'c', 'd']
+print(p)
+print()
 
-p.next_page()
-print(p.get_visible_items())
-# ['e', 'f', 'g', 'h']
+# Test chaînage des méthodes (Bug 3)
+print(p.next_page().next_page())
+print()
 
-p.last_page()
-print(p.get_visible_items())
-# ['y', 'z']
+# Test first_page / last_page
+print(p.first_page())
+print()
+print(p.last_page())
+print()
 
-p.go_to_page(10)
-print(p.current_page)
+# Test go_to_page valide
+print(p.go_to_page(2))
+print()
 
-p.go_to_page(0)
-print(p.current_page)
+# Test go_to_page hors plage (Bug 2)
+try:
+    p.go_to_page(99)
+except ValueError as e:
+    print(f"✅ ValueError attrapée : {e}")
