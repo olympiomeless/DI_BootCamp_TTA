@@ -8,3 +8,4 @@ __pycache__/
 *.keras
 data/
 datasets/
+Week5/Day4/ExerciceXP/household_power_consumption.txt
