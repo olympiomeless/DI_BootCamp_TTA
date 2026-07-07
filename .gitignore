@@ -21,6 +21,9 @@ node_modules/
 
 *.mp4
 *.avi
+**/checkpoint-*/
+*.safetensors
+optimizer.pt
 
 .DS_Store
 data/
